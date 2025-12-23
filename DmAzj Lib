@@ -1,0 +1,132 @@
+local Library = {}
+Library.__index = Library
+
+function Library:CreateWindow(titleText)
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "UILibrary"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = player:WaitForChild("PlayerGui")
+
+    local main = Instance.new("Frame")
+    main.Size = UDim2.new(0, 420, 0, 300)
+    main.Position = UDim2.new(0.5, -210, 0.5, -150)
+    main.BackgroundColor3 = Color3.fromRGB(18, 22, 28)
+    main.BorderSizePixel = 0
+    main.Parent = gui
+    main.Active = true
+    main.Draggable = true
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = main
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -50, 0, 45)
+    title.Position = UDim2.new(0, 15, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = titleText or "UI Library"
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 20
+    title.TextColor3 = Color3.new(1,1,1)
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = main
+
+    local minimize = Instance.new("TextButton")
+    minimize.Size = UDim2.new(0, 30, 0, 30)
+    minimize.Position = UDim2.new(1, -40, 0, 8)
+    minimize.Text = "-"
+    minimize.Font = Enum.Font.GothamBold
+    minimize.TextSize = 20
+    minimize.BackgroundColor3 = Color3.fromRGB(40, 50, 65)
+    minimize.TextColor3 = Color3.new(1,1,1)
+    minimize.Parent = main
+
+    local mCorner = Instance.new("UICorner")
+    mCorner.CornerRadius = UDim.new(0, 6)
+    mCorner.Parent = minimize
+
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, -30, 1, -60)
+    content.Position = UDim2.new(0, 15, 0, 50)
+    content.BackgroundTransparency = 1
+    content.Parent = main
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 10)
+    layout.Parent = content
+
+    minimize.MouseButton1Click:Connect(function()
+        content.Visible = not content.Visible
+        minimize.Text = content.Visible and "-" or "+"
+        main.Size = content.Visible and UDim2.new(0,420,0,300) or UDim2.new(0,420,0,55)
+    end)
+
+    local Window = {}
+
+    function Window:AddButton(text, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 40)
+        btn.Text = text or "Button"
+        btn.Font = Enum.Font.Gotham
+        btn.TextSize = 16
+        btn.BackgroundColor3 = Color3.fromRGB(45, 65, 90)
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.Parent = content
+
+        local bCorner = Instance.new("UICorner")
+        bCorner.CornerRadius = UDim.new(0, 8)
+        bCorner.Parent = btn
+
+        btn.MouseButton1Click:Connect(function()
+            if callback then
+                callback()
+            end
+        end)
+    end
+
+    function Window:AddLabel(text)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, 0, 0, 30)
+        lbl.Text = text or "Label"
+        lbl.Font = Enum.Font.Gotham
+        lbl.TextSize = 15
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = content
+    end
+
+    function Window:AddToggle(text, callback)
+        local toggle = false
+
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 40)
+        btn.Text = "[ OFF ]  " .. (text or "Toggle")
+        btn.Font = Enum.Font.Gotham
+        btn.TextSize = 16
+        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.Parent = content
+
+        local tCorner = Instance.new("UICorner")
+        tCorner.CornerRadius = UDim.new(0, 8)
+        tCorner.Parent = btn
+
+        btn.MouseButton1Click:Connect(function()
+            toggle = not toggle
+            btn.Text = (toggle and "[ ON ]  " or "[ OFF ]  ") .. text
+            btn.BackgroundColor3 = toggle and Color3.fromRGB(45, 90, 65) or Color3.fromRGB(60, 60, 60)
+            if callback then
+                callback(toggle)
+            end
+        end)
+    end
+
+    return Window
+end
+
+return Library
